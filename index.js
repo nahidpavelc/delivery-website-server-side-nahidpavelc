@@ -17,12 +17,41 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 async function run() {
+
     try {
         await client.connect();
         const database = client.db('bdgoDelivery');
-
-        //Services Database
         const ourServices = database.collection('services');
+        const ordersCollection = database.collection('orders');
+
+        //GET API
+        app.get('/orders', async (eq, res) => {
+            const cursor = ordersCollection.find({});
+            const orders = await cursor.toArray();
+            res.send(orders);
+        })
+
+        //POST API
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            console.log('hit Post API', order);
+            const result = await ordersCollection.insertOne(order);
+            console.log(result);
+            res.json(result)
+        });
+
+        //DELETE API
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await ordersCollection.deleteOne(query);
+            res.json(result);
+        })
+
+
+
+
+
         // Get API 
         app.get('/services', async (req, res) => {
             const cursor = ourServices.find({});
@@ -52,21 +81,17 @@ async function run() {
             const result = await ourServices.deleteOne(query);
             res.json(result);
         })
-
-        //Order Database
-        const newOrder = database.collection('order');
-        //Get API
-        app.get('/O', async (req, res) => {
-            const cursor = ourServices.find({});
-            const services = await cursor.toArray();
-            res.send(services);
-        })
-
     }
     finally {
         // await client.close();
     }
 }
+
+
+
+
+
+
 
 run().catch(console.dir);
 
