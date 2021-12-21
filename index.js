@@ -23,15 +23,15 @@ async function run() {
         const database = client.db('bdgoDelivery');
         const ourServices = database.collection('services');
         const ordersCollection = database.collection('orders');
+        const reviewCollection = database.collection('reviews');
 
-        //GET API
+        //ORDER GET API O
         app.get('/orders', async (eq, res) => {
             const cursor = ordersCollection.find({});
             const orders = await cursor.toArray();
             res.send(orders);
         })
-
-        //POST API
+        //ORDER POST API
         app.post('/orders', async (req, res) => {
             const order = req.body;
             console.log('hit Post API', order);
@@ -39,8 +39,7 @@ async function run() {
             console.log(result);
             res.json(result)
         });
-
-        //DELETE API
+        //ORDER DELETE API
         app.delete('/orders/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -48,17 +47,13 @@ async function run() {
             res.json(result);
         })
 
-
-
-
-
-        // Get API 
+        //SERVICES Get API 
         app.get('/services', async (req, res) => {
             const cursor = ourServices.find({});
             const services = await cursor.toArray();
             res.send(services);
         })
-        //Get Single Service
+        //SERVICES Get Single Service
         app.get('/Services/:id', async (req, res) => {
             const id = req.params.id;
             console.log('getting specific Service', id);
@@ -66,7 +61,7 @@ async function run() {
             const service = await ourServices.findOne(query);
             res.json(service);
         })
-        //post API
+        //SERVICES post API
         app.post('/services', async (req, res) => {
             const service = req.body;
             console.log('hit the Pots API', service);
@@ -74,12 +69,19 @@ async function run() {
             console.log(result);
             res.json(result)
         });
-        //DELETE Api
+        //SERVICES DELETE Api
         app.delete('/services/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await ourServices.deleteOne(query);
             res.json(result);
+        })
+
+        //REVIEWS GET API
+        app.get('/reviews', async (req, res) => {
+            const cursor = reviewCollection.find({});
+            const reviews = await cursor.toArray();
+            res.send(reviews);
         })
     }
     finally {
