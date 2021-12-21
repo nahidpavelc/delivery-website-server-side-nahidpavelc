@@ -34,9 +34,8 @@ async function run() {
         //ORDER POST API
         app.post('/orders', async (req, res) => {
             const order = req.body;
-            console.log('hit Post API', order);
+            order.createdAt = new Date(); //Added Date & id
             const result = await ordersCollection.insertOne(order);
-            console.log(result);
             res.json(result)
         });
         //ORDER DELETE API
