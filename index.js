@@ -25,9 +25,19 @@ async function run() {
         const ordersCollection = database.collection('orders');
         const reviewCollection = database.collection('reviews');
 
+        //Get Order by USER
+        // app.get('/orders', async (req, res) => {
+
+        // })
+
         //ORDER GET API O
-        app.get('/orders', async (eq, res) => {
-            const cursor = ordersCollection.find({});
+        app.get('/orders', async (req, res) => {
+            let query = {};
+            const email = req.query.email;
+            if (email) {
+                query = { email: email };
+            }
+            const cursor = ordersCollection.find(query);
             const orders = await cursor.toArray();
             res.send(orders);
         })
@@ -45,6 +55,24 @@ async function run() {
             const result = await ordersCollection.deleteOne(query);
             res.json(result);
         })
+        //Update Order
+        app.put('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateStatus = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updatedStatus = {
+                $set: {
+                    status: updateStatus.statusUpdate,
+                },
+            };
+            const result = await ordersCollection.updateOne(
+                filter,
+                updatedStatus,
+                options
+            );
+            res.json(result);
+        });
 
         //SERVICES Get API 
         app.get('/services', async (req, res) => {
